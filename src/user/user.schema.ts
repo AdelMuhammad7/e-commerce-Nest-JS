@@ -25,6 +25,7 @@ export class User {
     required: true,
     min: [5, 'Password must be at least 3 characters'],
     max: [30, 'Password must be at most 30 characters'],
+    select: false,
   })
   password: string;
 
@@ -60,7 +61,7 @@ export class User {
     type: Boolean,
     default: true,
   })
-  active: string;
+  active: boolean;
 
   @Prop({
     type: String,
