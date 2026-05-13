@@ -9,6 +9,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User } from './user.schema';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
+import { APIFeatures } from 'src/common/utils/api-features';
+import { QueryDto } from 'src/common/dto/query.dto';
 
 const saltOrRounds = 10;
 @Injectable()
@@ -45,8 +47,35 @@ export class UserService {
     };
   }
 
-  findAll() {
-    return this.userModel.find().select('-__v');
+  // findAll() {
+  //   return this.userModel.find().select('-__v');
+  // }
+
+  async findAll(query: QueryDto) {
+    const features = new APIFeatures(this.userModel.find(), query)
+      .filter()
+      .search(['name', 'email'])
+      .select()
+      .sort()
+      .pagination();
+
+    const users = await features.getQuery().select('-password').lean();
+
+    const total = await this.userModel.countDocuments();
+
+    return {
+      status: 200,
+
+      results: users.length,
+
+      pagination: {
+        total,
+        page: Number(query.page) || 1,
+        limit: Number(query.limit) || 10,
+      },
+
+      data: users,
+    };
   }
 
   async findOne(

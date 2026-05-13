@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -14,6 +15,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { Roles, UserRole } from 'src/common/decorator/role.decorator';
 import { RolesGuard } from 'src/common/guards/roles.guard';
+import { QueryDto } from 'src/common/dto/query.dto';
 
 @Controller('user')
 @Roles([UserRole.ADMIN])
@@ -33,8 +35,8 @@ export class UserController {
   // @Routes  ===>  GET   api/v1/user
   // @access  ===>  ['admin']
   @Get()
-  findAll() {
-    return this.userService.findAll();
+  findAll(@Query() query: QueryDto) {
+    return this.userService.findAll(query);
   }
 
   // @docs    ===>  Get One User
