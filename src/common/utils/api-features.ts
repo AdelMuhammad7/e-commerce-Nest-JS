@@ -9,12 +9,9 @@ export class APIFeatures<T> {
     private mongooseQuery: Query<T[], T>,
     private queryString: any,
   ) {}
-
   pagination() {
     const page = Number(this.queryString.page) || 1;
-
     const limit = Math.min(Number(this.queryString.limit) || 10, 100);
-
     const skip = (page - 1) * limit;
 
     this.mongooseQuery = this.mongooseQuery.skip(skip).limit(limit);
@@ -38,11 +35,12 @@ export class APIFeatures<T> {
         $or: fields.map((field) => ({
           [field]: {
             $regex: this.queryString.search,
+            // ignore Case
             $options: 'i',
           },
         })),
       };
-
+      console.log(searchQuery);
       this.mongooseQuery = this.mongooseQuery.find(searchQuery);
     }
 

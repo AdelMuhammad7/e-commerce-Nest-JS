@@ -54,7 +54,7 @@ export class UserService {
   async findAll(query: QueryDto) {
     const features = new APIFeatures(this.userModel.find(), query)
       .filter()
-      .search(['name', 'email'])
+      .search(['name', 'email', 'role'])
       .select()
       .sort()
       .pagination();
@@ -65,9 +65,7 @@ export class UserService {
 
     return {
       status: 200,
-
       results: users.length,
-
       pagination: {
         total,
         page: Number(query.page) || 1,
