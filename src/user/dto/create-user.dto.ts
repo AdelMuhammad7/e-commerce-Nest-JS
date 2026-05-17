@@ -32,7 +32,12 @@ export class CreateUserDto {
   @Length(5, 30)
   password: string;
 
+  @IsString()
+  @Length(5, 30)
+  passwordConfirm: string;
+
   @IsEnum(UserRole)
+  @IsOptional()
   role: UserRole;
 
   @IsString()

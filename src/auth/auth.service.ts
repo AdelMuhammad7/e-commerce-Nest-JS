@@ -1,26 +1,107 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { CreateUserDto } from 'src/user/dto/create-user.dto';
+import { User } from 'src/user/user.schema';
+import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
+import { SigninDto } from './dto/signon.dto';
+
+const saltOrRounds = 10;
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
+  constructor(
+    @InjectModel(User.name) private userModel: Model<User>,
+    private jwtService: JwtService,
+  ) {}
+
+  // sign up service
+  async signup(createUserDto: CreateUserDto) {
+    // 1 ==> check if user exists
+    const ifUserExist = await this.userModel.findOne({
+      email: createUserDto.email,
+    });
+
+    if (ifUserExist) {
+      throw new BadRequestException('User already exists');
+    }
+
+    // 2 ==> hash password
+    const hashedPassword = await bcrypt.hash(
+      createUserDto.password,
+      saltOrRounds,
+    );
+
+    if (createUserDto.password !== createUserDto.passwordConfirm) {
+      throw new BadRequestException('password is not match');
+    }
+
+    // 3 ==> create user
+    const user = await this.userModel.create({
+      ...createUserDto,
+      password: hashedPassword,
+      role: 'user',
+    });
+
+    const payload = {
+      _id: user._id,
+      email: user.email,
+      role: user.role,
+    };
+
+    const token = await this.jwtService.signAsync(payload, {
+      secret: process.env.JWT_SECRET,
+    });
+
+    return {
+      status: 201,
+      message: 'User Created successfully',
+      data: user,
+      token,
+    };
   }
 
-  findAll() {
-    return `This action returns all auth`;
-  }
+  // sign in service
+  async signin(signinDto: SigninDto) {
+    // 1 ==> check if user exists
+    const user = await this.userModel
+      .findOne({
+        email: signinDto.email,
+      })
+      .select('+password');
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
+    console.log(user);
 
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+    const isMatch = await bcrypt.compare(signinDto.password, user.password);
+    if (!isMatch) {
+      throw new UnauthorizedException();
+    }
+
+    const payload = {
+      _id: user._id,
+      email: user.email,
+      role: user.role,
+    };
+
+    const token = await this.jwtService.signAsync(payload, {
+      secret: process.env.JWT_SECRET,
+    });
+
+    return {
+      status: 200,
+      message: 'User Logged in successfully',
+      data: user,
+      token,
+    };
   }
 }
