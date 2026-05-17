@@ -69,6 +69,12 @@ export class User {
   verificationCode: string;
 
   @Prop({
+    type: Boolean,
+    default: false,
+  })
+  verificationStatus: boolean;
+
+  @Prop({
     type: String,
     enum: ['male', 'female'],
   })
