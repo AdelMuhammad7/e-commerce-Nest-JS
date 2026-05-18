@@ -5,6 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from './auth/auth.module';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { UserMeModule } from './user-me/user-me.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
         },
       },
     }),
+    UserMeModule,
   ],
   controllers: [],
   providers: [],
