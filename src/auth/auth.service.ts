@@ -87,8 +87,6 @@ export class AuthService {
       throw new NotFoundException('User not found');
     }
 
-    console.log(user);
-
     const isMatch = await bcrypt.compare(signinDto.password, user.password);
     if (!isMatch) {
       throw new UnauthorizedException();

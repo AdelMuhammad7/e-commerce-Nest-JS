@@ -6,6 +6,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from './auth/auth.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { UserMeModule } from './user-me/user-me.module';
+import { CategoryModule } from './category/category.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { UserMeModule } from './user-me/user-me.module';
       },
     }),
     UserMeModule,
+    CategoryModule,
   ],
   controllers: [],
   providers: [],
