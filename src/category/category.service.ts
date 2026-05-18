@@ -40,7 +40,10 @@ export class CategoryService {
       .sort()
       .pagination();
 
-    const categories = await features.getQuery().lean();
+    const categories = await features
+      .getQuery()
+      .populate('subCategories')
+      .lean({ virtuals: true });
     const total = await this.categoryModel.countDocuments();
 
     return {
@@ -58,9 +61,11 @@ export class CategoryService {
 
   // get one category
   async findOne(id: string) {
-    const category = await this.categoryModel.findById(id);
+    const category = await this.categoryModel
+      .findById(id)
+      .populate('subCategories');
     if (!category) {
-      throw new NotFoundException();
+      throw new NotFoundException('category not foumd');
     }
     return {
       status: 200,

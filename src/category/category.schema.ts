@@ -20,3 +20,12 @@ export class Category {
 }
 
 export const CatgeorySchema = SchemaFactory.createForClass(Category);
+
+CatgeorySchema.virtual('subCategories', {
+  ref: 'SubCategory',
+  localField: '_id',
+  foreignField: 'category',
+});
+
+CatgeorySchema.set('toJSON', { virtuals: true });
+CatgeorySchema.set('toObject', { virtuals: true });

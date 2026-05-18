@@ -40,7 +40,6 @@ export class APIFeatures<T> {
           },
         })),
       };
-      console.log(searchQuery);
       this.mongooseQuery = this.mongooseQuery.find(searchQuery);
     }
 
