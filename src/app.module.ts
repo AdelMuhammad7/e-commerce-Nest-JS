@@ -8,6 +8,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { UserMeModule } from './user-me/user-me.module';
 import { CategoryModule } from './category/category.module';
 import { SubCategoryModule } from './sub-category/sub-category.module';
+import { BrandModule } from './brand/brand.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { SubCategoryModule } from './sub-category/sub-category.module';
     UserMeModule,
     CategoryModule,
     SubCategoryModule,
+    BrandModule,
   ],
   controllers: [],
   providers: [],
